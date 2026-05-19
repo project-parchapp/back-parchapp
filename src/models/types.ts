@@ -69,3 +69,17 @@ export interface RouteStopRow {
   longitude: string;
   note: string | null;
 }
+
+export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
+
+export interface ReservationRow {
+  id: string;
+  establishment_id: string;
+  tourist_user_id: string;
+  reservation_date: Date;
+  party_size: number;
+  status: ReservationStatus;
+  note: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
