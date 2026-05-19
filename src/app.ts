@@ -8,6 +8,7 @@ import { interestsRouter } from './routes/interests.routes.js';
 import { routesCrudRouter } from './routes/routesCrud.routes.js';
 import { syncRouter } from './routes/sync.routes.js';
 import { HttpError } from './utils/httpError.js';
+import { reservationsRouter } from './routes/reservations.routes.js';
 
 export function createApp() {
   const app = express();
@@ -28,6 +29,7 @@ export function createApp() {
   api.use(establishmentsRouter);
   api.use(syncRouter);
   api.use(routesCrudRouter);
+  api.use(reservationsRouter);
 
   app.use('/api/v1', api);
 
