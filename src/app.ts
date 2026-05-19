@@ -5,6 +5,7 @@ import { authRouter } from './routes/auth.routes.js';
 import { establishmentsRouter } from './routes/establishments.routes.js';
 import { healthRouter } from './routes/health.routes.js';
 import { interestsRouter } from './routes/interests.routes.js';
+import { reservationsRouter } from './routes/reservations.routes.js';
 import { routesCrudRouter } from './routes/routesCrud.routes.js';
 import { syncRouter } from './routes/sync.routes.js';
 import { HttpError } from './utils/httpError.js';
@@ -27,6 +28,7 @@ export function createApp() {
   api.use(interestsRouter);
   api.use(establishmentsRouter);
   api.use(syncRouter);
+  api.use(reservationsRouter);
   api.use(routesCrudRouter);
 
   app.use('/api/v1', api);

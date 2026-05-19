@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { getRepositories } from '../container.js';
-import { requireAuth } from '../middleware/requireAuth.js';
+import { requireAuth } from '../middleware/auth.js';
 import { HttpError } from '../utils/httpError.js';
 import { wrapAsync } from '../utils/wrapAsync.js';
 
@@ -28,7 +28,7 @@ reservationsRouter.post(
     const { reservations } = getRepositories();
     const reservation = await reservations.create({
       ...parsed.data,
-      tourist_user_id: req.user!.sub,
+      tourist_user_id: req.authUser!.userId,
     });
 
     res.status(201).json(reservation);
@@ -41,7 +41,7 @@ reservationsRouter.get(
   requireAuth,
   wrapAsync(async (req, res) => {
     const { reservations } = getRepositories();
-    const result = await reservations.findByTourist(req.user!.sub);
+    const result = await reservations.findByTourist(req.authUser!.userId);
     res.json(result);
   })
 );
