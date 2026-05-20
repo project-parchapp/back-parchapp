@@ -7,6 +7,7 @@ import { RouteStopRepository } from './repositories/RouteStopRepository.js';
 import { SeedRepository } from './repositories/SeedRepository.js';
 import { UserRepository } from './repositories/UserRepository.js';
 import { getEnv } from './config/env.js';
+import { ReservationRepository } from './repositories/ReservationRepository.js';
 
 export type Repositories = {
   users: UserRepository;
