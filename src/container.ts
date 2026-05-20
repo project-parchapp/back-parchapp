@@ -1,13 +1,13 @@
 import { getPool } from './db/pool.js';
+import { BookingRepository } from './repositories/BookingRepository.js';
 import { EstablishmentRepository } from './repositories/EstablishmentRepository.js';
 import { InterestRepository } from './repositories/InterestRepository.js';
-import { ReservationRepository } from './repositories/ReservationRepository.js';
 import { RouteRepository } from './repositories/RouteRepository.js';
 import { RouteStopRepository } from './repositories/RouteStopRepository.js';
 import { SeedRepository } from './repositories/SeedRepository.js';
+import { ServiceRepository } from './repositories/ServiceRepository.js';
 import { UserRepository } from './repositories/UserRepository.js';
 import { getEnv } from './config/env.js';
-import { ReservationRepository } from './repositories/ReservationRepository.js';
 
 export type Repositories = {
   users: UserRepository;
@@ -16,7 +16,8 @@ export type Repositories = {
   routes: RouteRepository;
   routeStops: RouteStopRepository;
   seed: SeedRepository;
-  reservations: ReservationRepository;
+  services: ServiceRepository;
+  bookings: BookingRepository;
 };
 
 let repos: Repositories | null = null;
@@ -32,7 +33,8 @@ export function getRepositories(): Repositories {
       routes: new RouteRepository(pool),
       routeStops: new RouteStopRepository(pool),
       seed: new SeedRepository(pool, SEED_CSV_DIR),
-      reservations: new ReservationRepository(pool),
+      services: new ServiceRepository(pool),
+      bookings: new BookingRepository(pool),
     };
   }
   return repos;

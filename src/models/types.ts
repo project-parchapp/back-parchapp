@@ -70,16 +70,81 @@ export interface RouteStopRow {
   note: string | null;
 }
 
-export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
+export type BookingStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'cancelled'
+  | 'completed'
+  | 'no_show';
 
-export interface ReservationRow {
+export interface ServiceRow {
   id: string;
   establishment_id: string;
-  tourist_user_id: string;
-  reservation_date: Date;
-  party_size: number;
-  status: ReservationStatus;
-  note: string | null;
+  title: string;
+  description: string | null;
+  service_kind: string;
+  duration_minutes: number | null;
+  base_price_amount: string | null;
+  currency_code: string;
+  max_party_size: number | null;
+  is_bookable: boolean;
+  is_active: boolean;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface BookingRow {
+  id: string;
+  user_id: string;
+  service_id: string;
+  route_id: string | null;
+  party_size: number;
+  scheduled_start: Date;
+  scheduled_end: Date | null;
+  status: BookingStatus;
+  notes: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface EstablishmentEventRow {
+  service_id: string;
+  establishment_id: string;
+  title: string;
+  description: string | null;
+  duration_minutes: number | null;
+  max_party_size: number | null;
+  is_active: boolean;
+  service_created_at: Date;
+  establishment_trade_name: string;
+  establishment_status: EstablishmentStatus;
+  anchor_booking_id: string | null;
+  scheduled_start: Date | null;
+  scheduled_end: Date | null;
+  booked_party_size: number;
+  spots_available: number;
+}
+
+export interface EstablishmentBookingViewRow {
+  booking_id: string;
+  status: BookingStatus;
+  party_size: number;
+  scheduled_start: Date;
+  scheduled_end: Date | null;
+  notes: string | null;
+  created_at: Date;
+  service_id: string;
+  service_title: string;
+  establishment_id: string;
+  trade_name: string;
+  tourist_user_id: string;
+  tourist_display_name: string;
+  tourist_email: string;
+}
+
+export interface CreateEventResult {
+  service_id: string;
+  booking_id: string;
+  service: ServiceRow;
+  booking: BookingRow;
 }

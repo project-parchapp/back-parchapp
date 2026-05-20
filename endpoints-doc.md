@@ -561,6 +561,135 @@ Carga datos CSV en tablas staging y ejecuta el procedimiento `sp_populate_from_s
 
 ---
 
+## Eventos (establecimiento)
+
+Los eventos se modelan como filas en `services` con `service_kind = 'event'`. Al crear un evento, el dueño del establecimiento genera automáticamente una reserva (`bookings`) en estado `pending`.
+
+### `GET /events`
+
+Lista eventos reservables a nivel global: activos, establecimiento activo, con cupos y fecha futura.
+
+| Query | Descripción |
+|-------|-------------|
+| `limit` | Máx. 200 (default 50) |
+| `offset` | Desplazamiento (default 0) |
+
+**Respuesta `200`:** array de `EstablishmentEventRow`.
+
+### `GET /establishments/:id/events`
+
+Lista eventos del establecimiento (vista `v_establishment_events`).
+
+| Query | Descripción |
+|-------|-------------|
+| `active` | `false` incluye inactivos; por defecto solo activos |
+
+**Respuesta `200`:** array de `EstablishmentEventRow`.
+
+### `POST /establishments/:id/events`
+
+Crea evento + reserva inicial. Solo el **propietario** del establecimiento.
+
+**Body**
+
+```json
+{
+  "title": "Noche de jazz",
+  "description": "Música en vivo",
+  "scheduled_start": "2026-06-15T20:00:00.000Z",
+  "duration_minutes": 120,
+  "party_size": 1,
+  "max_party_size": 40,
+  "notes": null
+}
+```
+
+**Respuesta `201`**
+
+```json
+{
+  "service_id": "1",
+  "booking_id": "1",
+  "service": { "...": "ServiceRow" },
+  "booking": { "...": "BookingRow" }
+}
+```
+
+### `GET /events/:serviceId`
+
+Detalle de un evento (cupos, fechas, establecimiento).
+
+---
+
+## Reservas (bookings)
+
+### `POST /services/:serviceId/bookings`
+
+Reserva cupo en un evento existente. Requiere Bearer (turista u otro usuario autenticado).
+
+**Body**
+
+```json
+{
+  "party_size": 2,
+  "notes": "Opcional"
+}
+```
+
+**Respuesta `201`:** `BookingRow`.
+
+**Errores:** `409` si no hay cupo suficiente.
+
+### `GET /bookings/me`
+
+Lista las reservas del usuario autenticado.
+
+### `GET /establishments/:id/bookings`
+
+Reservas del establecimiento (vista `v_bookings_for_establishment`). Solo **propietario**.
+
+### `PATCH /bookings/:id/confirm`
+
+Confirma reserva pendiente. Solo **propietario** del establecimiento asociado.
+
+### `PATCH /bookings/:id/cancel`
+
+Cancela reserva. Solo el **usuario** que creó la reserva (`user_id`).
+
+---
+
+### Modelos
+
+**`EstablishmentEventRow`**
+
+| Campo | Tipo |
+|-------|------|
+| `service_id` | string |
+| `establishment_id` | string |
+| `title` | string |
+| `description` | string \| null |
+| `duration_minutes` | number \| null |
+| `max_party_size` | number \| null |
+| `scheduled_start` | string (ISO) \| null |
+| `scheduled_end` | string (ISO) \| null |
+| `booked_party_size` | number |
+| `spots_available` | number |
+
+**`BookingRow`**
+
+| Campo | Tipo |
+|-------|------|
+| `id` | string |
+| `user_id` | string |
+| `service_id` | string |
+| `party_size` | number |
+| `scheduled_start` | string (ISO) |
+| `scheduled_end` | string (ISO) \| null |
+| `status` | `pending` \| `confirmed` \| `cancelled` \| `completed` \| `no_show` |
+| `notes` | string \| null |
+
+---
+
 ## Resumen de endpoints
 
 | Método | Ruta | Auth |
@@ -582,6 +711,14 @@ Carga datos CSV en tablas staging y ejecuta el procedimiento `sp_populate_from_s
 | `POST` | `/routes/:routeId/stops` | Bearer |
 | `PATCH` | `/routes/:routeId/stops/:stopId` | Bearer |
 | `DELETE` | `/routes/:routeId/stops/:stopId` | Bearer |
+| `GET` | `/establishments/:id/events` | No |
+| `POST` | `/establishments/:id/events` | Bearer (propietario) |
+| `GET` | `/events/:serviceId` | No |
+| `POST` | `/services/:serviceId/bookings` | Bearer |
+| `GET` | `/bookings/me` | Bearer |
+| `GET` | `/establishments/:id/bookings` | Bearer (propietario) |
+| `PATCH` | `/bookings/:id/confirm` | Bearer (propietario) |
+| `PATCH` | `/bookings/:id/cancel` | Bearer (dueño reserva) |
 | `POST` | `/sync/seed` | `x-seed-secret` |
 
 *Prefijo común: `/api/v1`*

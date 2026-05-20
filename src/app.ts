@@ -2,14 +2,14 @@ import cors from 'cors';
 import express, { type ErrorRequestHandler } from 'express';
 import { getEnv } from './config/env.js';
 import { authRouter } from './routes/auth.routes.js';
+import { bookingsRouter } from './routes/bookings.routes.js';
 import { establishmentsRouter } from './routes/establishments.routes.js';
+import { eventsRouter } from './routes/events.routes.js';
 import { healthRouter } from './routes/health.routes.js';
 import { interestsRouter } from './routes/interests.routes.js';
-import { reservationsRouter } from './routes/reservations.routes.js';
 import { routesCrudRouter } from './routes/routesCrud.routes.js';
 import { syncRouter } from './routes/sync.routes.js';
 import { HttpError } from './utils/httpError.js';
-import { reservationsRouter } from './routes/reservations.routes.js';
 
 export function createApp() {
   const app = express();
@@ -28,10 +28,10 @@ export function createApp() {
   api.use(authRouter);
   api.use(interestsRouter);
   api.use(establishmentsRouter);
+  api.use(eventsRouter);
+  api.use(bookingsRouter);
   api.use(syncRouter);
-  api.use(reservationsRouter);
   api.use(routesCrudRouter);
-  api.use(reservationsRouter);
 
   app.use('/api/v1', api);
 
